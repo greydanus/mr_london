@@ -19,6 +19,6 @@ Examples
 --------
 Here are a few fun examples of text written by MrLondon:
 
-![sample_1.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/sample_1.png)
-![sample_2.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/sample_2.png)
-![sample_3.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/sample_3.png)
+![sample_1.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_1.png)
+![sample_2.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_2.png)
+![sample_3.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_3.png)
