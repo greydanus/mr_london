@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1><b>MrLondon</b>: Learning to write English at the Character Level</h1>
+
+<br>
+
+<div class="sechighlight">
+<div class="container sec">
+  <h2>Introduction</h2>
+
+  <div id="coursedesc">
+Most machine learning algorithms do not analyze sequential patterns very well because they cannot 'remember' the data they have seen in the past. Recurrent neural networks can. Furthermore, we can stack them on top of each other to get sequential deep learning! I built a deep recurrent neural network known as a Long Short-Term Memory (LSTM) network and trained it to write like Jack London.
+  </div>
+</div>
+</div>
+
+<center>
+    <div class="project_demo">
+        <h4>Enter a few words or a sentence:</h4>
+        <form action="" method="post" name="login">
+            {{ form.hidden_tag() }}
+                {{ form.primer(size=35) }}
+
+                {% for error in form.primer.errors %}
+                  <span style="color: red;">[Error: {{error}}]</span>
+                {% endfor %}
+            <p>
+                <br>
+                <input type="submit" value="Go">
+            </p>
+        </form>
+
+        <p><i>Be patient. This may take several seconds to compute:</i></p>
+
+        {% if prediction != None %}
+        <div class="picture_summary">
+            <p><b>
+                {{primer}}
+                {% for line in prediction %}
+                  {{line}}
+                {% endfor %}
+            <p></b>
+        </div>
+
+        {% endif %}
+    </div>
+</center>
+
+<div class="maintext">
+
+    <h3> Background </h3>
+    <p>
+        You can find a very good introduction to LSTMs on <a target="_blank" href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/">Christopher Olah's blog</a>. I first discovered recurrent neural networks by reading Andrej Karpathy’s excellent blog post, <a target="_blank" href="https://karpathy.github.io/2015/05/21/rnn-effectiveness/">”The Unreasonable Effectiveness of Recurrent Neural Networks”</a>.
+    </p>
+
+    <h3> How it works </h3>
+    <p>
+        Using standard mathematical notation, the equations for updating an LSTM cell are:
+    </p>
+    <p>
+        <ol>
+            <li>Make a forget gate \(f_t\) to tell the network what to remove from its memory cell</li>
+                $$ f_t = \sigma(W_f \ \dot \ [h_{t-1}, x_t] + b_f ) $$
+            <li>Make a input gate \(i_t\) to tell the network what to add to its memory cell</li>
+                $$ i_t = \sigma(W_i \ \dot \ [h_{t-1}, x_t] + b_i $$
+            <li>Make a tensor \( \tilde C_t\) with contents we <i>might</i> add to its memory cell</li>
+                $$ \tilde C_t = \mathrm{tanh}(W_C \ \dot \ [h_{t-1},x_t] + b_C) $$
+            <li>Make a new memory cell \( C_t\) that is a combination of the existing memory state \( C_{t-1}\)  and the candidate state \( \tilde C_t\)</li>
+                $$ C_t = f_t \ * \ C_{t-1} + i_t \ * \ \tilde C_t $$
+            <li>Make an output gate \(o_t\) to tell the network what part of its updated memory cell to output</li>
+                 $$ o_t = \sigma(W_o \ \dot \ [h_{t-1}, x_t] + b_o $$
+            <li>Finally, use the output gate \(o_t\) to choose information from the memory cell \(C_t\) and make a hypothesis \(h_t\)</li>
+                $$ h_t = o_t * \mathrm{tanh}(C_t) $$
+        </ol>
+    </p>
+
+    <center>
+        <img src="/static/img/lstm_diagram.png" width="300" alt="lstm_diagram" style="max-width:60%;">
+        <p class="picture_summary">
+            The two parallel arrows represent the two internal 'states' of the cell and the vertical arrows represent data flowing in and out at each time step
+        </p>
+    </center>
+
+    <p>
+        Notice that the output will be a function of the current input vector \(x_t\), the previous hypothesis \(h_{t-1}\), and the cell's memory state \(C_t\). This is how LSTMs build internal representations of sequences that span dozens of neighboring timesteps.
+    </p>
+    <p>
+        Recurrent neural networks are notoriously difficult to train. To make training more efficient, Keras splits the four weight tensors into \(W\) and \(U\) components. First, it dots the input vector by weights \(W_i\), \(W_f\), \(W_c\), and \(W_o\). Then it dots \(h_{t-1}\) with weights \(U_i\), \(U_f\), \(U_c\), and \(U_o\) and evaluates the rest of the equations as they appear above. My numpy reimplementation is the same; it starts with the \(W\) tensors:
+    </p>
+
+    <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">xi = np.dot(X, W_i) + b_i
+<span class="n">xf = np.dot(X, W_f) + b_f</span>
+<span class="n">xc = np.dot(X, W_c) + b_c</span>
+<span class="n">xo = np.dot(X, W_o) + b_o</span></code></pre></div>
+    <p>
+        In a helper function we finish updating the cell's state:
+    </p>
+        <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">i_t = self.hard_sigmoid(xi_t + np.dot(hprev, U_i)) #[1,m] + [m]*[m,m] -> [1,m]</span>
+<span class="n">f_t = self.hard_sigmoid(xf_t + np.dot(hprev, U_f)) #[1,m] + [m]*[m,m] -> [1,m]</span>
+<span class="n">o_t = self.hard_sigmoid(xo_t + np.dot(hprev, U_o)) #[1,m] + [m]*[m,m] -> [1,m]</span>
+<span class="n">c_t = f_t*Cprev + i_t * np.tanh(xc_t + np.dot(hprev, U_c)) #[1,m]*[m] + [1,m] * [1,m] -> [1,m]</span>
+<span class="n">h_t = o_t * np.tanh(c_t) #[1,m]*[1,m] (elementwise)</span></code></pre></div>
+    
+    <p>
+        The demo model consists of two LSTM cells with a dense softmax classification layer perched on top. I used the same architecture as the <a target="_blank" href="https://github.com/fchollet/keras/blob/master/examples/lstm_text_generation.py">Keras LSTM text example</a>. Training takes a lot of computation, so I ran it as a 24-hour job on a GPU node of Dartmouth's <a target="_blank" href="http://techdoc.dartmouth.edu/discovery/">Discovery</a> computing cluster.
+    </p>
+
+
+    <h3> Discussion </h3>
+    <p>
+        I succeeded in building a working deep LSTM from the ground up. It learned English well enough to spell words correctly most of the time and follow basic grammar rules.
+    </p>
+    <p>
+        In the future I hope to train my models on a dedicated computing cluster that has GPU. I also need to redesign the architecture because the model writes too slow for the purposes of this demo. One way to do this would be to move to a word-level model instead of a letter-level model.
+    </p>
+</div>
+
+<div class="sechighlight">
+<div id="footer">
+Finished November 28, 2015
+</div>
+</div>
+
+{% endblock %}
