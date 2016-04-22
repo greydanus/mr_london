@@ -19,9 +19,7 @@ Examples
 --------
 Here are a few examples of text written by MrLondon:
 
-<p align="center">
-![sample_1.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_1.png)
-</p>
+->![sample_1.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_1.png)<-
 --------
 ![sample_2.png](https://github.com/greydanus/mr_london/blob/master/app/static/img/sample_2.png)
 --------
