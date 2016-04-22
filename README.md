@@ -1,13 +1,13 @@
-#Pythonic OCR
-A convolutional neural network implemented in pure numpy. Web demo [here](https://pythonic-ocr.herokuapp.com/)
+#MrLondon
+A LSTM recurrent neural network implemented in pure numpy. Web demo [here](https://mr-london.herokuapp.com/)
 
 Description
 -----------
-I built this project to teach myself about how deep convolutional neural networks function. First, I created my own MNIST-like dataset with about 30 alphanumeric symbols.
+I built this project to teach myself about how recurrent neural networks function. First, I made a dataset that consisted of several million words from Jack London novels.
 
-Next, I trained a deep convolutional network using Keras and saved the weights using python's pickle utility. Finally, I rewrote all the forward propagation code in pure numpy (as opposed to Theano or Tensorflow as in Keras). This lets me run the network as a demo via heroku.
+Next, I trained a deep Long Short Term Memory (LSTM) recurrent neural network using Keras and saved the weights using python's pickle utility. Finally, I rewrote all the forward propagation code in pure numpy (as opposed to Theano or Tensorflow as in Keras). This lets me run the network as a demo via heroku.
 
-There are a few Easter eggs too: try a five-pointed star or a triangle!
+The model runs a bit slow on the web app, but keep in mind that it had to learn English vocabulary, grammar, and punctuation at the character level!
 
 Dependencies
 --------
@@ -17,6 +17,6 @@ Dependencies are packaged in the flask folder, so this app does not have any ext
 
 Examples
 --------
-I trained the network on my own handwriting, so performace will be slightly different for other individuals. Even so, it is good at making fine discrimination such as judging the difference between O/Q:
+Here are a few fun examples of text written by MrLondon:
 
-![recognized_o.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/recognized_o.png) ![recognized_q.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/recognized_q.png)
+![sample_1.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/sample_1.png) ![sample_2.png](https://github.com/greydanus/pythonic_ocr/blob/master/app/static/img/sample_2.png)
