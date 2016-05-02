@@ -1,5 +1,6 @@
 #MrLondon
-A LSTM recurrent neural network implemented in pure numpy. Web demo [here](https://mr-london.herokuapp.com/)
+[Website](https://mr-london.herokuapp.com/)
+A LSTM recurrent neural network implemented in pure numpy.
 
 Description
 -----------
